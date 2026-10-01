@@ -8,6 +8,7 @@ const resenas = require('../controllers/resenas.controller');
 const contacto = require('../controllers/contacto.controller');
 const eventos = require('../controllers/eventos.controller');
 const admin = require('../controllers/admin.controller');
+const setup = require('../controllers/setup.controller');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 const api = Router();
@@ -31,6 +32,7 @@ const contactLimiter = rateLimit({
 api.post('/auth/registro', authLimiter, auth.register);
 api.post('/auth/login', authLimiter, auth.login);
 api.get('/auth/me', requireAuth, auth.me);
+api.post('/setup', setup.setup);
 
 api.get('/categorias', catalogo.listCategorias);
 api.get('/promociones', catalogo.listPromociones);

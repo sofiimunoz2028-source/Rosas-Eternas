@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm install --prefix backend-rosas-eternas && npm install --prefix frontend-rosas-eternas",
+  "buildCommand": "npm run build --prefix frontend-rosas-eternas",
+  "outputDirectory": "frontend-rosas-eternas/dist",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

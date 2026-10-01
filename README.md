@@ -32,10 +32,11 @@ Cuentas de prueba (después del seed):
 
 ## Despliegue en Vercel
 
-Crea **dos proyectos**:
+Un solo proyecto (por ejemplo `https://rosas-eternas-olive.vercel.app`):
 
-1. **Frontend**: raíz `frontend-rosas-eternas`. Variables: `VITE_API_URL` (URL pública de la API + `/api`) y `VITE_WHATSAPP`.
-2. **Backend**: raíz `backend-rosas-eternas`. Variables: las de MySQL de Clever Cloud, `JWT_SECRET`, `FRONTEND_ORIGIN` (dominio del frontend) y `NODE_ENV=production`.
+1. **Root Directory** vacío (la raíz del repositorio, no `backend-rosas-eternas`).
+2. Variables: las de MySQL de Clever Cloud, `JWT_SECRET`, `FRONTEND_ORIGIN=https://rosas-eternas-olive.vercel.app` y `NODE_ENV=production`.
+3. La PWA queda en `/` y la API en `/api` (por ejemplo `/api/salud`).
 
 En Clever Cloud, MySQL suele exigir que la IP del servidor esté autorizada. Si la API en Vercel no conecta, habilita conexiones externas o usa un host con IP estable.
 

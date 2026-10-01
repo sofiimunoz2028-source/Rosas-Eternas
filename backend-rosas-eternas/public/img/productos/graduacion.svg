@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Detalle de graduaci�n">
+  <rect width="800" height="1000" fill="#F4F1EA"/>
+  <circle cx="400" cy="340" r="70" fill="#1C1C1C"/>
+  <circle cx="320" cy="400" r="58" fill="#C9A227"/>
+  <circle cx="480" cy="400" r="58" fill="#1F3FA6"/>
+  <circle cx="400" cy="460" r="52" fill="#A31D4B"/>
+  <rect x="250" y="700" width="300" height="18" fill="#C9A227"/>
+  <text x="400" y="900" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#6B1535">Graduaci�n</text>
+</svg>

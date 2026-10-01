@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -8,12 +9,16 @@ const { notFound, errorHandler } = require('./middleware/error');
 const app = express();
 app.set('trust proxy', 1);
 
+const publicDir = path.join(__dirname, '../public');
 const allowed = (process.env.FRONTEND_ORIGIN || '')
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use(cors({
   origin(origin, callback) {
     if (!origin) return callback(null, true);
@@ -33,7 +38,15 @@ mount.get('/salud', (req, res) => {
 mount.use(api);
 
 app.use('/api', mount);
+app.use(express.static(publicDir));
 app.use(mount);
+
+app.get(/.*/, (req, res, next) => {
+  if (req.method !== 'GET' || req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(publicDir, 'index.html'), (err) => {
+    if (err) next();
+  });
+});
 
 app.use(notFound);
 app.use(errorHandler);

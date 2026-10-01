@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Ramo de 12 rosas de cinta">
+  <rect width="800" height="1000" fill="#F8F4EE"/>
+  <g transform="translate(400 620)">
+    <path d="M0 0 C-8 90 -6 180 0 280" stroke="#2F6B4F" stroke-width="10" fill="none"/>
+    <ellipse cx="-70" cy="-20" rx="50" ry="22" fill="#2F6B4F"/>
+    <ellipse cx="80" cy="10" rx="46" ry="20" fill="#2F6B4F" opacity=".85"/>
+  </g>
+  <g fill="#A31D4B">
+    <circle cx="400" cy="280" r="70"/><circle cx="300" cy="340" r="58"/><circle cx="500" cy="340" r="58"/>
+    <circle cx="250" cy="430" r="52"/><circle cx="550" cy="430" r="52"/><circle cx="400" cy="400" r="62"/>
+  </g>
+  <g fill="#E0517F" opacity=".7">
+    <circle cx="400" cy="280" r="38"/><circle cx="300" cy="340" r="30"/><circle cx="500" cy="340" r="30"/>
+  </g>
+  <rect x="250" y="700" width="300" height="90" rx="20" fill="#B8892B"/>
+  <text x="400" y="920" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#6B1535">Ramo eterno</text>
+</svg>

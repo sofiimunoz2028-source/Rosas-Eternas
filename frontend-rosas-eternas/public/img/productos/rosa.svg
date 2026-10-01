@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Rosa eterna con tallo">
+  <rect width="800" height="1000" fill="#F8F4EE"/>
+  <path d="M400 430 C400 560 394 700 400 820" stroke="#2F6B4F" stroke-width="12" fill="none"/>
+  <path d="M400 560 C470 540 510 500 516 460 C470 470 430 510 400 560Z" fill="#2F6B4F"/>
+  <circle cx="400" cy="300" r="120" fill="#A31D4B"/>
+  <circle cx="400" cy="300" r="88" fill="#C2255C"/>
+  <circle cx="400" cy="300" r="56" fill="#E0517F"/>
+  <circle cx="400" cy="300" r="28" fill="#F48FB1"/>
+  <text x="400" y="920" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#6B1535">Rosa eterna</text>
+</svg>

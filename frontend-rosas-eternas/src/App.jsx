@@ -1,37 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import appLogo from '/favicon.svg'
-import PWABadge from './PWABadge.jsx'
-import './App.css'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
+import Protected from './components/Protected';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import Home from './pages/Home';
+import Catalogo from './pages/Catalogo';
+import Producto from './pages/Producto';
+import Promociones from './pages/Promociones';
+import Carrito from './pages/Carrito';
+import Checkout from './pages/Checkout';
+import Pedidos from './pages/Pedidos';
+import PedidoDetalle from './pages/PedidoDetalle';
+import Ingresar from './pages/Ingresar';
+import Registro from './pages/Registro';
+import Contacto from './pages/Contacto';
+import Eventos from './pages/Eventos';
+import Favoritos from './pages/Favoritos';
+import Admin from './pages/Admin';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={appLogo} className="logo" alt="frontend-rosas-eternas logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>frontend-rosas-eternas</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <PWABadge />
-    </>
-  )
+    <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/catalogo" element={<Catalogo />} />
+              <Route path="/catalogo/:slug" element={<Producto />} />
+              <Route path="/promociones" element={<Promociones />} />
+              <Route path="/carrito" element={<Carrito />} />
+              <Route path="/checkout" element={<Protected><Checkout /></Protected>} />
+              <Route path="/ingresar" element={<Ingresar />} />
+              <Route path="/registro" element={<Registro />} />
+              <Route path="/contacto" element={<Contacto />} />
+              <Route path="/eventos" element={<Eventos />} />
+              <Route path="/cuenta/pedidos" element={<Protected><Pedidos /></Protected>} />
+              <Route path="/cuenta/pedidos/:id" element={<Protected><PedidoDetalle /></Protected>} />
+              <Route path="/cuenta/favoritos" element={<Protected><Favoritos /></Protected>} />
+              <Route path="/admin" element={<Protected admin><Admin /></Protected>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
+  );
 }
-
-export default App

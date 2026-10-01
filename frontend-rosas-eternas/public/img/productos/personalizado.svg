@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Dise�o personalizado">
+  <rect width="800" height="1000" fill="#F8F4EE"/>
+  <circle cx="280" cy="340" r="70" fill="#1F3FA6"/>
+  <circle cx="400" cy="300" r="74" fill="#C9A227"/>
+  <circle cx="520" cy="340" r="70" fill="#C0182E"/>
+  <circle cx="400" cy="430" r="64" fill="#F7B7CB"/>
+  <text x="400" y="900" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#6B1535">A tu medida</text>
+</svg>

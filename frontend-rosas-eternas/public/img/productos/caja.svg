@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Caja de regalo con rosas">
+  <rect width="800" height="1000" fill="#F8F4EE"/>
+  <rect x="160" y="420" width="480" height="320" rx="24" fill="#C9A227"/>
+  <rect x="160" y="360" width="480" height="90" rx="20" fill="#8A6418"/>
+  <rect x="370" y="360" width="60" height="380" fill="#6B1535"/>
+  <circle cx="330" cy="300" r="54" fill="#A31D4B"/>
+  <circle cx="400" cy="270" r="58" fill="#C2255C"/>
+  <circle cx="470" cy="300" r="54" fill="#E0517F"/>
+  <text x="400" y="900" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#6B1535">Caja de amor</text>
+</svg>

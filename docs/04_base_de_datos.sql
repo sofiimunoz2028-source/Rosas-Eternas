@@ -374,12 +374,12 @@ INSERT INTO productos (id_producto, id_categoria, nombre, slug, descripcion, pre
   (6, 5, 'Diseño a la medida',       'diseno-a-la-medida',    'Cuéntanos tu idea y la hacemos realidad con cinta fantasía.',                   70000,  5, 1, 0);
 
 INSERT INTO imagenes_producto (id_producto, url, texto_alternativo, es_principal, orden) VALUES
-  (1, '/img/productos/ramo-12-rosas.webp',   'Ramo de 12 rosas de cinta rojas',          1, 0),
-  (2, '/img/productos/ramo-6-rosas.webp',    'Ramo pequeño de 6 rosas de cinta rosadas', 1, 0),
-  (3, '/img/productos/rosa-individual.webp', 'Rosa de cinta con tallo',                  1, 0),
-  (4, '/img/productos/caja-amor.webp',       'Caja de regalo con rosas de cinta',        1, 0),
-  (5, '/img/productos/graduacion.webp',      'Ramo de cinta para graduación',            1, 0),
-  (6, '/img/productos/personalizado.webp',   'Diseño personalizado en cinta fantasía',   1, 0);
+  (1, '/img/productos/ramo-12.svg', 'Ramo de 12 rosas de cinta rojas', 1, 0),
+  (2, '/img/productos/ramo-6.svg', 'Ramo pequeño de 6 rosas de cinta rosadas', 1, 0),
+  (3, '/img/productos/rosa.svg', 'Rosa de cinta con tallo', 1, 0),
+  (4, '/img/productos/caja.svg', 'Caja de regalo con rosas de cinta', 1, 0),
+  (5, '/img/productos/graduacion.svg', 'Ramo de cinta para graduación', 1, 0),
+  (6, '/img/productos/personalizado.svg', 'Diseño personalizado en cinta fantasía', 1, 0);
 
 -- Todos los productos admiten colores de cinta (1-6) y empaque de celofán (7)
 INSERT INTO producto_opciones (id_producto, id_opcion)

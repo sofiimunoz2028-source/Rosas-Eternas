@@ -1,6 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
+import { Suspense } from "react"
 import { ProductCard } from "@/components/product-card"
+import { PromoStrip } from "@/components/promo-strip"
 import { buttonVariants } from "@/components/ui/button"
 import { products } from "@/lib/catalog"
 import { cn } from "cn"
@@ -75,6 +77,12 @@ export default function HomePage() {
           />
         </div>
       </section>
+
+      <Suspense fallback={null}>
+        <div className="pb-8">
+          <PromoStrip />
+        </div>
+      </Suspense>
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-16">
         <div className="flex items-end justify-between gap-4">

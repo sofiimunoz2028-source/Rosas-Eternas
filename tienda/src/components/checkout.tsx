@@ -19,6 +19,7 @@ export function Checkout() {
   const { items, hydrated, total, setQuantity, removeItem } = useCart()
   const [customer, setCustomer] = useState<CustomerDetails>(EMPTY)
   const [errors, setErrors] = useState<{ name?: string; phone?: string; place?: string }>({})
+  const [sending, setSending] = useState(false)
 
   function patch(partial: Partial<CustomerDetails>) {
     setCustomer((current) => ({ ...current, ...partial }))
@@ -36,6 +37,25 @@ export function Checkout() {
       phone: phone ? undefined : "Escribe un celular de 10 dígitos. Ejemplo: 300 123 4567.",
       place: customer.place.trim() ? undefined : "Escribe la ciudad y el barrio.",
     })
+  }
+
+  async function place(link: string) {
+    setSending(true)
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 4000)
+    try {
+      await fetch("/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, customer: { ...customer, phone } }),
+        signal: controller.signal,
+      })
+    } catch {
+      // WhatsApp still opens if saving the copy for the shop takes too long.
+    } finally {
+      clearTimeout(timer)
+    }
+    window.location.assign(link)
   }
 
   if (!hydrated) {
@@ -185,17 +205,22 @@ export function Checkout() {
           <span className="text-sm text-muted-foreground">Total</span>
           <span className="font-heading text-3xl">{formatCop(total)}</span>
         </div>
-        {orderLink ? (
-          <a href={orderLink} className={cn(buttonVariants(), "h-11 w-full bg-leaf text-white hover:bg-leaf/90")}>
-            Enviar pedido
-          </a>
-        ) : (
-          <Button type="submit" className="h-11 w-full bg-leaf text-white hover:bg-leaf/90" onClick={showMissing}>
-            Enviar pedido
-          </Button>
-        )}
+        <Button
+          type="button"
+          className="h-11 w-full bg-leaf text-white hover:bg-leaf/90"
+          disabled={sending}
+          onClick={() => {
+            if (!orderLink || !phone) {
+              showMissing()
+              return
+            }
+            void place(orderLink)
+          }}
+        >
+          {sending ? "Abriendo pedido…" : "Enviar pedido"}
+        </Button>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          El mensaje incluye tu celular. Al enviarlo se confirman el pago y el domicilio: efectivo, transferencia o contraentrega.
+          El mensaje incluye tu celular. Se guarda el pedido y se abre WhatsApp para enviarlo. Ahí se confirman el pago y el domicilio.
         </p>
       </form>
     </div>

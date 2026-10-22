@@ -24,3 +24,5 @@ npm run build
 - Fotos: `public/flores/`
 
 El pedido no se cobra en la página. Quien compra deja su celular y el botón abre WhatsApp con el detalle, el total y ese número, dirigido al +57 321 547 1953. Solo falta pulsar enviar. El pago (efectivo, transferencia o contraentrega) y el domicilio se confirman en ese chat.
+
+Los pedidos quedan guardados para revisarlos en `/admin`, junto con las promociones que se publican en la tienda.

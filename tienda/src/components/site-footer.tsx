@@ -16,6 +16,7 @@ export function SiteFooter() {
             <li><Link href="/catalogo" className="hover:text-wine">Catálogo</Link></li>
             <li><Link href="/personalizar" className="hover:text-wine">Personalizar un ramo</Link></li>
             <li><Link href="/pedido" className="hover:text-wine">Tu pedido</Link></li>
+            <li><Link href="/admin" className="hover:text-wine">Administrar</Link></li>
           </ul>
         </div>
         <div>

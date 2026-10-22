@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Rosas Eternas">
+  <rect width="64" height="64" rx="16" fill="#F8E7EE"/>
+  <path d="M32 46c0 4-.4 8 0 12" fill="none" stroke="#2F6B4F" stroke-width="2" stroke-linecap="round"/>
+  <path d="M32 40c6-1.5 10-6 10.5-10.5-5 .4-9 4.2-10.5 10.5z" fill="#2F6B4F"/>
+  <circle cx="32" cy="26" r="12" fill="#6B1535"/>
+  <circle cx="32" cy="26" r="8" fill="#A31D4B"/>
+  <circle cx="32" cy="26" r="4.5" fill="#F48FB1"/>
+</svg>

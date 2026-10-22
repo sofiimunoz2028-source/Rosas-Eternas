@@ -18,7 +18,7 @@ const steps = [
   },
   {
     title: "Deja tu celular",
-    text: "El pedido pide el número de quien compra y manda el aviso con el total y la entrega.",
+    text: "El pedido pide el celular de quien compra y arma el mensaje con el total y la entrega.",
   },
 ]
 
@@ -61,7 +61,7 @@ export default function HomePage() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            El pedido no abre otra aplicación: te pedimos un celular y enviamos el aviso desde aquí.
+            Dejas tu celular y el pedido abre el mensaje ya escrito, listo para enviar.
           </p>
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-muted ring-1 ring-foreground/10 md:aspect-[5/4]">

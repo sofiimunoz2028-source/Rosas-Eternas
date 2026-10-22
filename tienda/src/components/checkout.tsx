@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { QuantityStepper } from "@/components/choices"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,84 +10,38 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/lib/cart"
 import { MAX_QUANTITY } from "@/lib/catalog"
-import { displayPhone, formatCop, normalizePhone, type CustomerDetails } from "@/lib/order"
+import { buildOrderMessage, formatCop, normalizePhone, whatsappLink, type CustomerDetails } from "@/lib/order"
 import { cn } from "cn"
 
 const EMPTY: CustomerDetails = { name: "", phone: "", place: "", date: "", notes: "" }
 
 export function Checkout() {
-  const { items, hydrated, total, setQuantity, removeItem, clear } = useCart()
+  const { items, hydrated, total, setQuantity, removeItem } = useCart()
   const [customer, setCustomer] = useState<CustomerDetails>(EMPTY)
   const [errors, setErrors] = useState<{ name?: string; phone?: string; place?: string }>({})
-  const [sending, setSending] = useState(false)
-  const [sentPhone, setSentPhone] = useState("")
-  const [formError, setFormError] = useState("")
-  const trap = useRef<HTMLInputElement>(null)
 
   function patch(partial: Partial<CustomerDetails>) {
     setCustomer((current) => ({ ...current, ...partial }))
   }
 
-  async function send() {
-    const phone = normalizePhone(customer.phone)
-    const next = {
+  const phone = normalizePhone(customer.phone)
+  const orderLink =
+    customer.name.trim() && phone && customer.place.trim()
+      ? whatsappLink(buildOrderMessage(items, { ...customer, phone }))
+      : ""
+
+  function showMissing() {
+    setErrors({
       name: customer.name.trim() ? undefined : "Escribe tu nombre para el pedido.",
       phone: phone ? undefined : "Escribe un celular de 10 dígitos. Ejemplo: 300 123 4567.",
       place: customer.place.trim() ? undefined : "Escribe la ciudad y el barrio.",
-    }
-    setErrors(next)
-    setFormError("")
-    if (next.name || next.phone || next.place || items.length === 0 || !phone) return
-
-    setSending(true)
-    try {
-      const response = await fetch("/api/pedido", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items,
-          customer,
-          company: trap.current?.value ?? "",
-        }),
-      })
-      const data = (await response.json().catch(() => null)) as { error?: string; field?: string } | null
-      if (!response.ok) {
-        const field = data?.field
-        if (field === "name" || field === "phone" || field === "place") {
-          setErrors({ [field]: data?.error })
-        }
-        setFormError(data?.error || "No pudimos enviar el pedido. Inténtalo otra vez.")
-        return
-      }
-      setSentPhone(displayPhone(phone))
-      clear()
-    } catch {
-      setFormError("No pudimos enviar el pedido. Revisa la conexión e inténtalo otra vez.")
-    } finally {
-      setSending(false)
-    }
+    })
   }
 
   if (!hydrated) {
     return (
       <div className="mx-auto w-full max-w-3xl px-4 py-16">
         <p className="text-muted-foreground">Cargando tu pedido…</p>
-      </div>
-    )
-  }
-
-  if (sentPhone) {
-    return (
-      <div className="mx-auto w-full max-w-3xl px-4 py-16 text-center">
-        <h1 className="font-heading text-4xl text-wine">Pedido enviado</h1>
-        <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-          Recibimos el pedido. Te escribimos al {sentPhone} para confirmar el pago y la entrega.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/catalogo" className={cn(buttonVariants(), "h-11 px-5")}>
-            Ver catálogo
-          </Link>
-        </div>
       </div>
     )
   }
@@ -119,7 +73,7 @@ export function Checkout() {
       <div>
         <h1 className="font-heading text-4xl text-wine">Tu pedido</h1>
         <p className="mt-2 text-muted-foreground">
-          Revisa las flores y deja el celular de quien hace el pedido. Con eso enviamos el aviso.
+          Revisa las flores y deja el celular de quien compra. El mensaje sale escrito, con ese número, para enviarlo al local.
         </p>
         <ul className="mt-6 space-y-4">
           {items.map((item) => (
@@ -162,7 +116,7 @@ export function Checkout() {
         className="h-fit space-y-4 rounded-3xl bg-card p-5 ring-1 ring-foreground/10 md:sticky md:top-24"
         onSubmit={(event) => {
           event.preventDefault()
-          send()
+          showMissing()
         }}
       >
         <h2 className="font-heading text-2xl">Datos para la entrega</h2>
@@ -231,27 +185,18 @@ export function Checkout() {
           <span className="text-sm text-muted-foreground">Total</span>
           <span className="font-heading text-3xl">{formatCop(total)}</span>
         </div>
-        <input
-          ref={trap}
-          type="text"
-          name="company"
-          tabIndex={-1}
-          autoComplete="off"
-          aria-hidden
-          className="hidden"
-          defaultValue=""
-        />
-        <Button type="submit" className="h-11 w-full bg-leaf text-white hover:bg-leaf/90" disabled={sending}>
-          {sending ? "Enviando pedido…" : "Enviar pedido"}
-        </Button>
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          El pago se confirma por teléfono: efectivo, transferencia o contraentrega. El domicilio depende del barrio.
-        </p>
-        {formError && (
-          <p className="rounded-xl bg-accent p-3 text-sm text-wine" role="alert">
-            {formError}
-          </p>
+        {orderLink ? (
+          <a href={orderLink} className={cn(buttonVariants(), "h-11 w-full bg-leaf text-white hover:bg-leaf/90")}>
+            Enviar pedido
+          </a>
+        ) : (
+          <Button type="submit" className="h-11 w-full bg-leaf text-white hover:bg-leaf/90" onClick={showMissing}>
+            Enviar pedido
+          </Button>
         )}
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          El mensaje incluye tu celular. Al enviarlo se confirman el pago y el domicilio: efectivo, transferencia o contraentrega.
+        </p>
       </form>
     </div>
   )

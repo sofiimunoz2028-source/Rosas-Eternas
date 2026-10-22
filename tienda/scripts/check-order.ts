@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describeCustom, describeProduct, emptyFlowerSelections, getProduct } from "../src/lib/catalog.ts"
-import { buildOrderMessage, displayPhone, formatCop, normalizePhone, readOrder, SHOP_PHONE } from "../src/lib/order.ts"
+import { buildOrderMessage, displayPhone, formatCop, normalizePhone, readOrder, SHOP_PHONE, whatsappLink } from "../src/lib/order.ts"
 
 const classic = getProduct("ramo-clasico")
 assert.ok(classic)
@@ -63,6 +63,9 @@ assert.equal(normalizePhone("+57 321 547 1953"), "3215471953")
 assert.equal(normalizePhone("12345"), null)
 assert.equal(displayPhone("3001234567"), "+57 300 123 4567")
 assert.equal(SHOP_PHONE, "573215471953")
+const link = whatsappLink(message)
+assert.ok(link.startsWith(`https://wa.me/${SHOP_PHONE}?text=`))
+assert.match(decodeURIComponent(link), /\+57 300 000 0000/)
 
 const parsed = readOrder({
   items: [standard],

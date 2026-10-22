@@ -122,3 +122,7 @@ export function readOrder(body: unknown):
 
   return { lines, customer: { name, phone, place, date, notes } }
 }
+
+export function whatsappLink(text: string) {
+  return `https://wa.me/${SHOP_PHONE}?text=${encodeURIComponent(text)}`
+}

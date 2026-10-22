@@ -1,11 +1,7 @@
 import { orderTotal, readOrder } from "@/lib/order"
 import { requireAdmin } from "@/lib/require-admin"
+import { safeError } from "@/lib/safe-error"
 import { addOrder, listOrders } from "@/lib/shop-store"
-
-function safeError(error: unknown) {
-  const message = error instanceof Error ? `${error.name}: ${error.message}` : "unknown"
-  return message.replace(/vercel_blob_rw_\S+/g, "[token]").slice(0, 220)
-}
 
 export async function GET() {
   const denied = await requireAdmin()

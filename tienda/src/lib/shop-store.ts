@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
-import { BlobPreconditionFailedError, get, put } from "@vercel/blob"
+import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysql2/promise"
 import type { CustomerDetails, OrderLine } from "@/lib/order"
 import type { OrderStatus, Promotion, StoredOrder } from "@/lib/shop-types"
 
@@ -12,10 +12,13 @@ type ShopState = {
 }
 
 const EMPTY: ShopState = { orders: [], promotions: [] }
-const BLOB_PATH = "shop/state.json"
 const FILE_PATH = path.join(process.cwd(), "data", "shop-state.json")
+const ROW_ID = "main"
 
 let queue: Promise<unknown> = Promise.resolve()
+let pool: Pool | null = null
+let ready: Promise<void> | null = null
+let useSsl = process.env.MYSQL_SSL === "1"
 
 function enqueue<T>(task: () => Promise<T>) {
   const run = queue.then(task, task)
@@ -38,11 +41,74 @@ function parseState(text: string): ShopState {
   }
 }
 
-async function readFileState(): Promise<{ state: ShopState; etag?: string }> {
+function usesMysql() {
+  return Boolean(process.env.MYSQL_ADDON_HOST)
+}
+
+function getPool() {
+  if (!pool) {
+    pool = mysql.createPool({
+      host: process.env.MYSQL_ADDON_HOST,
+      user: process.env.MYSQL_ADDON_USER,
+      password: process.env.MYSQL_ADDON_PASSWORD,
+      database: process.env.MYSQL_ADDON_DB,
+      port: Number(process.env.MYSQL_ADDON_PORT || 3306),
+      waitForConnections: true,
+      connectionLimit: 2,
+      connectTimeout: 10000,
+      timezone: "Z",
+      charset: "utf8mb4",
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+    })
+  }
+  return pool
+}
+
+function sslRequired(error: unknown) {
+  if (process.env.MYSQL_SSL === "0" || process.env.MYSQL_SSL === "1" || useSsl) return false
+  const message = error instanceof Error ? error.message : ""
+  const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : ""
+  return code === "HANDSHAKE_SSL_ERROR" || code === "ER_SECURE_TRANSPORT_REQUIRED" || /ssl|secure transport|tls/i.test(message)
+}
+
+async function ensureMysql(): Promise<void> {
+  if (!ready) {
+    ready = (async (): Promise<void> => {
+      const connection = await getPool().getConnection()
+      try {
+        await connection.query(
+          `CREATE TABLE IF NOT EXISTS shop_admin_state (
+            id VARCHAR(16) NOT NULL PRIMARY KEY,
+            body MEDIUMTEXT NOT NULL
+          ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
+        )
+        await connection.query("INSERT IGNORE INTO shop_admin_state (id, body) VALUES (?, ?)", [
+          ROW_ID,
+          JSON.stringify(EMPTY),
+        ])
+      } finally {
+        connection.release()
+      }
+    })().catch(async (error: unknown): Promise<void> => {
+      ready = null
+      if (!sslRequired(error)) throw error
+      useSsl = true
+      if (pool) {
+        const closing = pool
+        pool = null
+        await closing.end().catch(() => undefined)
+      }
+      return ensureMysql()
+    })
+  }
+  return ready
+}
+
+async function readFileState(): Promise<ShopState> {
   try {
-    return { state: parseState(await readFile(FILE_PATH, "utf8")) }
+    return parseState(await readFile(FILE_PATH, "utf8"))
   } catch {
-    return { state: structuredClone(EMPTY) }
+    return structuredClone(EMPTY)
   }
 }
 
@@ -51,53 +117,65 @@ async function writeFileState(state: ShopState) {
   await writeFile(FILE_PATH, JSON.stringify(state))
 }
 
-async function readBlobState(): Promise<{ state: ShopState; etag?: string }> {
-  const result = await get(BLOB_PATH, { access: "private", useCache: false })
-  if (!result || result.statusCode !== 200 || !result.stream) return { state: structuredClone(EMPTY) }
-  const text = await new Response(result.stream).text()
-  return { state: parseState(text), etag: result.blob.etag }
+async function readMysqlState(): Promise<ShopState> {
+  await ensureMysql()
+  const connection = await getPool().getConnection()
+  try {
+    const [rows] = await connection.query<RowDataPacket[]>(
+      "SELECT body FROM shop_admin_state WHERE id = ? LIMIT 1",
+      [ROW_ID],
+    )
+    const body = rows[0]?.body
+    return typeof body === "string" ? parseState(body) : structuredClone(EMPTY)
+  } finally {
+    connection.release()
+  }
 }
 
-async function writeBlobState(state: ShopState, etag?: string) {
-  await put(BLOB_PATH, JSON.stringify(state), {
-    access: "private",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    cacheControlMaxAge: 60,
-    ifMatch: etag,
-  })
-}
-
-function usesBlob() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+async function readState() {
+  return usesMysql() ? readMysqlState() : readFileState()
 }
 
 async function mutate(change: (state: ShopState) => ShopState) {
   return enqueue(async () => {
-    let lastError: unknown
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const current = usesBlob() ? await readBlobState() : await readFileState()
-      const next = change(current.state)
-      try {
-        if (usesBlob()) await writeBlobState(next, current.etag)
-        else await writeFileState(next)
-        return next
-      } catch (error) {
-        lastError = error
-        const retry =
-          error instanceof BlobPreconditionFailedError ||
-          (error instanceof Error && /exist|precondition|overwrite/i.test(error.message))
-        if (!retry) throw error
-      }
+    if (!usesMysql()) {
+      const next = change(await readFileState())
+      await writeFileState(next)
+      return next
     }
-    throw lastError
+
+    await ensureMysql()
+    const connection = await getPool().getConnection()
+    try {
+      await connection.beginTransaction()
+      const [rows] = await connection.query<RowDataPacket[]>(
+        "SELECT body FROM shop_admin_state WHERE id = ? FOR UPDATE",
+        [ROW_ID],
+      )
+      const body = rows[0]?.body
+      const current = typeof body === "string" ? parseState(body) : structuredClone(EMPTY)
+      const next = change(current)
+      const payload = JSON.stringify(next)
+      const [updated] = await connection.query<ResultSetHeader>(
+        "UPDATE shop_admin_state SET body = ? WHERE id = ?",
+        [payload, ROW_ID],
+      )
+      if (updated.affectedRows === 0) {
+        await connection.query("INSERT INTO shop_admin_state (id, body) VALUES (?, ?)", [ROW_ID, payload])
+      }
+      await connection.commit()
+      return next
+    } catch (error) {
+      await connection.rollback().catch(() => undefined)
+      throw error
+    } finally {
+      connection.release()
+    }
   })
 }
 
 export async function listOrders() {
-  const current = usesBlob() ? await readBlobState() : await readFileState()
-  return current.state.orders
+  return (await readState()).orders
 }
 
 export async function addOrder(input: { customer: CustomerDetails; lines: OrderLine[]; total: number }) {
@@ -137,8 +215,7 @@ export async function setOrderStatus(id: string, status: OrderStatus) {
 }
 
 export async function listPromotions(activeOnly = false) {
-  const current = usesBlob() ? await readBlobState() : await readFileState()
-  const promotions = current.state.promotions
+  const promotions = (await readState()).promotions
   return activeOnly ? promotions.filter((promotion) => promotion.active) : promotions
 }
 

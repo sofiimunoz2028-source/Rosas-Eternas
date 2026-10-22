@@ -1,10 +1,16 @@
 import { requireAdmin } from "@/lib/require-admin"
+import { safeError } from "@/lib/safe-error"
 import { addPromotion, listPromotions } from "@/lib/shop-store"
 
 export async function GET() {
   const denied = await requireAdmin()
   if (denied) return denied
-  return Response.json({ promotions: await listPromotions(false) })
+  try {
+    return Response.json({ promotions: await listPromotions(false) })
+  } catch (error) {
+    console.error("list promotions", safeError(error))
+    return Response.json({ error: safeError(error) }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
@@ -25,6 +31,11 @@ export async function POST(request: Request) {
   if (detail.length > 240) {
     return Response.json({ error: "El detalle puede tener hasta 240 caracteres." }, { status: 400 })
   }
-  const promotion = await addPromotion({ title, detail })
-  return Response.json({ promotion })
+  try {
+    const promotion = await addPromotion({ title, detail })
+    return Response.json({ promotion })
+  } catch (error) {
+    console.error("save promotion", safeError(error))
+    return Response.json({ error: safeError(error) }, { status: 500 })
+  }
 }

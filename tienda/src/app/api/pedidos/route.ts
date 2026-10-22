@@ -2,11 +2,21 @@ import { orderTotal, readOrder } from "@/lib/order"
 import { requireAdmin } from "@/lib/require-admin"
 import { addOrder, listOrders } from "@/lib/shop-store"
 
+function safeError(error: unknown) {
+  const message = error instanceof Error ? `${error.name}: ${error.message}` : "unknown"
+  return message.replace(/vercel_blob_rw_\S+/g, "[token]").slice(0, 220)
+}
+
 export async function GET() {
   const denied = await requireAdmin()
   if (denied) return denied
-  const orders = await listOrders()
-  return Response.json({ orders })
+  try {
+    const orders = await listOrders()
+    return Response.json({ orders })
+  } catch (error) {
+    console.error("list orders", safeError(error))
+    return Response.json({ error: safeError(error) }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
@@ -22,10 +32,15 @@ export async function POST(request: Request) {
     return Response.json({ error: order.error, field: order.field }, { status: 400 })
   }
 
-  const saved = await addOrder({
-    customer: order.customer,
-    lines: order.lines,
-    total: orderTotal(order.lines),
-  })
-  return Response.json({ ok: true, id: saved.id })
+  try {
+    const saved = await addOrder({
+      customer: order.customer,
+      lines: order.lines,
+      total: orderTotal(order.lines),
+    })
+    return Response.json({ ok: true, id: saved.id })
+  } catch (error) {
+    console.error("save order", safeError(error))
+    return Response.json({ error: safeError(error) }, { status: 500 })
+  }
 }

@@ -1,10 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ProductCard } from "@/components/product-card"
-import { WhatsAppButton } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
 import { products } from "@/lib/catalog"
-import { WHATSAPP_DISPLAY, WHATSAPP_HELLO } from "@/lib/order"
 import { cn } from "cn"
 
 const featured = products.filter((product) => product.featured)
@@ -19,8 +17,8 @@ const steps = [
     text: "Colores de limpiapipas, tamaño, empaque y la dedicatoria de la tarjeta.",
   },
   {
-    title: "Pide por WhatsApp",
-    text: `El mensaje sale listo al ${WHATSAPP_DISPLAY}, con el total y los datos de entrega.`,
+    title: "Deja tu celular",
+    text: "El pedido pide el número de quien compra y manda el aviso con el total y la entrega.",
   },
 ]
 
@@ -35,7 +33,7 @@ const questions = [
   },
   {
     q: "¿Cómo se paga y se entrega?",
-    a: "Por WhatsApp se acuerda efectivo, transferencia o contraentrega. El domicilio se confirma según la ciudad y el barrio.",
+    a: "Te escribimos al celular del pedido para acordar efectivo, transferencia o contraentrega. El domicilio se confirma según la ciudad y el barrio.",
   },
 ]
 
@@ -49,7 +47,7 @@ export default function HomePage() {
             Rosas que duran más que el instante
           </h1>
           <p className="mt-4 max-w-md text-lg leading-relaxed text-muted-foreground">
-            Ramos, cajas y flores sueltas hechas a mano. Elige color, empaque y dedicatoria, mira el precio y manda el pedido por WhatsApp.
+            Ramos, cajas y flores sueltas hechas a mano. Elige color, empaque y dedicatoria, mira el precio y deja tu celular para confirmar el pedido.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/catalogo" className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")}>
@@ -63,11 +61,7 @@ export default function HomePage() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            También puedes escribir directo al{" "}
-            <a href={WHATSAPP_HELLO} className="font-medium text-wine underline-offset-4 hover:underline" target="_blank" rel="noreferrer">
-              {WHATSAPP_DISPLAY}
-            </a>
-            .
+            El pedido no abre otra aplicación: te pedimos un celular y enviamos el aviso desde aquí.
           </p>
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-muted ring-1 ring-foreground/10 md:aspect-[5/4]">
@@ -145,9 +139,11 @@ export default function HomePage() {
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-wine px-6 py-6 text-primary-foreground">
           <div>
             <p className="font-heading text-3xl">¿Ya sabes qué flores quieres?</p>
-            <p className="mt-1 text-sm text-primary-foreground/80">Escríbenos y armamos el pedido en el chat.</p>
+            <p className="mt-1 text-sm text-primary-foreground/80">Arma el pedido y deja el celular para confirmarlo.</p>
           </div>
-          <WhatsAppButton href={WHATSAPP_HELLO}>WhatsApp {WHATSAPP_DISPLAY}</WhatsAppButton>
+          <Link href="/catalogo" className={cn(buttonVariants({ size: "lg" }), "h-11 bg-leaf px-5 text-white hover:bg-leaf/90")}>
+            Hacer un pedido
+          </Link>
         </div>
       </section>
     </>

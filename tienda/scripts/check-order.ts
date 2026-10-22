@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describeCustom, describeProduct, emptyFlowerSelections, getProduct } from "../src/lib/catalog.ts"
-import { buildOrderMessage, formatCop, whatsappLink, WHATSAPP_PHONE } from "../src/lib/order.ts"
+import { buildOrderMessage, displayPhone, formatCop, normalizePhone, readOrder, SHOP_PHONE } from "../src/lib/order.ts"
 
 const classic = getProduct("ramo-clasico")
 assert.ok(classic)
@@ -55,10 +55,24 @@ assert.match(message, /Ramo clásico rojo × 2/)
 assert.match(message, /Liseth/)
 assert.match(message, /24\/10\/2026/)
 assert.match(message, /Chapinero/)
+assert.match(message, /\+57 300 000 0000/)
 assert.match(formatCop(72000), /72/)
 
-const link = whatsappLink(message)
-assert.ok(link.startsWith(`https://wa.me/${WHATSAPP_PHONE}?text=`))
-assert.equal(WHATSAPP_PHONE, "573215471953")
+assert.equal(normalizePhone("300 123 4567"), "3001234567")
+assert.equal(normalizePhone("+57 321 547 1953"), "3215471953")
+assert.equal(normalizePhone("12345"), null)
+assert.equal(displayPhone("3001234567"), "+57 300 123 4567")
+assert.equal(SHOP_PHONE, "573215471953")
+
+const parsed = readOrder({
+  items: [standard],
+  customer: { name: "Liseth", phone: "300 000 0000", place: "Bogotá, Chapinero", date: "2026-10-24", notes: "" },
+})
+assert.ok(!("error" in parsed))
+const missingPhone = readOrder({
+  items: [standard],
+  customer: { name: "Liseth", phone: "123", place: "Bogotá", date: "", notes: "" },
+})
+assert.equal("error" in missingPhone && missingPhone.field, "phone")
 
 console.log("order checks ok")

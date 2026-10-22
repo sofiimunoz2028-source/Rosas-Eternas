@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { WHATSAPP_DISPLAY, WHATSAPP_HELLO } from "@/lib/order"
 
 export function SiteFooter() {
   return (
@@ -21,11 +20,8 @@ export function SiteFooter() {
         </div>
         <div>
           <p className="text-sm font-medium">Pedidos</p>
-          <a href={WHATSAPP_HELLO} target="_blank" rel="noreferrer" className="mt-3 block text-sm text-wine hover:underline">
-            WhatsApp {WHATSAPP_DISPLAY}
-          </a>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            El pago se coordina por el chat: efectivo, transferencia o contraentrega. El domicilio depende del barrio.
+            En el pedido se pide el celular de quien compra. A ese número se confirma el pago y el domicilio.
           </p>
         </div>
       </div>

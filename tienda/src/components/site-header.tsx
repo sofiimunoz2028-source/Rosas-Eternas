@@ -3,11 +3,10 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, ShoppingBag } from "lucide-react"
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
 import { buttonVariants } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useCart } from "@/lib/cart"
-import { WHATSAPP_DISPLAY, WHATSAPP_HELLO } from "@/lib/order"
 import { cn } from "cn"
 
 const LINKS = [
@@ -54,14 +53,6 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <a
-          href={WHATSAPP_HELLO}
-          target="_blank"
-          rel="noreferrer"
-          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "hidden sm:inline-flex")}
-        >
-          WhatsApp
-        </a>
         <Link
           href="/pedido"
           className={cn(buttonVariants({ size: "sm" }), "relative h-8 px-3")}
@@ -98,14 +89,6 @@ export function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
-              <a
-                href={WHATSAPP_HELLO}
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-3 text-base font-medium text-leaf"
-              >
-                WhatsApp {WHATSAPP_DISPLAY}
-              </a>
             </nav>
           </SheetContent>
         </Sheet>
@@ -114,27 +97,3 @@ export function SiteHeader() {
   )
 }
 
-export function WhatsAppButton({
-  href,
-  children,
-  className,
-}: {
-  href: string
-  children: ReactNode
-  className?: string
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className={cn(
-        buttonVariants({ size: "lg" }),
-        "h-11 bg-leaf px-5 text-white hover:bg-leaf/90",
-        className,
-      )}
-    >
-      {children}
-    </a>
-  )
-}

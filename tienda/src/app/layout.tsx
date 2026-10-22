@@ -3,7 +3,6 @@ import { DM_Sans, Playfair_Display } from "next/font/google"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { CartProvider } from "@/lib/cart"
-import { WHATSAPP_DISPLAY } from "@/lib/order"
 import "./globals.css"
 
 const dm = DM_Sans({
@@ -31,13 +30,13 @@ export const metadata: Metadata = {
     template: "%s · Rosas Eternas",
   },
   description:
-    "Flores hechas a mano con limpiapipas. Catálogo con precios, personalización de colores y pedidos por WhatsApp.",
+    "Flores hechas a mano con limpiapipas. Catálogo con precios, personalización de colores y pedidos con tu celular.",
   applicationName: "Rosas Eternas",
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Rosas Eternas",
     description:
-      "Ramos, cajas y flores de limpiapipas. Elige colores, empaque y dedicatoria, y pide por WhatsApp.",
+      "Ramos, cajas y flores de limpiapipas. Elige colores, empaque y dedicatoria, y deja tu celular para el pedido.",
     locale: "es_CO",
     type: "website",
     images: ["/flores/hero-ramo.jpg"],
@@ -59,7 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className="flex-1">{children}</main>
           <SiteFooter />
         </CartProvider>
-        <span className="sr-only">Pedidos por WhatsApp al {WHATSAPP_DISPLAY}</span>
+        <span className="sr-only">El pedido pide el celular de quien compra y envía el aviso a la tienda.</span>
       </body>
     </html>
   )

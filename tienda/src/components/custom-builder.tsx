@@ -176,7 +176,7 @@ export function CustomBuilder() {
             router.push("/pedido")
           }}
         >
-          Pedir por WhatsApp
+          Pedir ahora
         </Button>
       </aside>
 
@@ -199,7 +199,7 @@ export function CustomBuilder() {
           <DialogHeader>
             <DialogTitle>Ramo listo para pedir</DialogTitle>
             <DialogDescription>
-              {priced.name} · {formatCop(priced.unitPrice)}. Revisa los datos de entrega y se abre WhatsApp con el mensaje.
+              {priced.name} · {formatCop(priced.unitPrice)}. Revisa los datos y deja el celular para enviar el pedido.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

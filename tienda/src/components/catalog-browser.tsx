@@ -56,7 +56,7 @@ export function CatalogBrowser() {
       <p className="text-sm font-medium text-rose">Catálogo</p>
       <h1 className="mt-1 font-heading text-4xl text-wine">Flores de limpiapipas</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
-        Cada pieza tiene precio. Ábrela para elegir colores, tamaño, empaque y la dedicatoria. El pedido se envía por WhatsApp.
+        Cada pieza tiene precio. Ábrela para elegir colores, tamaño, empaque y la dedicatoria. Al pedir, deja un celular para confirmar.
       </p>
 
       <div className="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center">

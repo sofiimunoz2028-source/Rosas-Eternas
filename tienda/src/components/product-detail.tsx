@@ -155,7 +155,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 router.push("/pedido")
               }}
             >
-              Pedir por WhatsApp
+              Pedir ahora
             </Button>
           </div>
         </form>
@@ -178,7 +178,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <DialogHeader>
             <DialogTitle>Quedó en tu pedido</DialogTitle>
             <DialogDescription>
-              {product.name} · {formatCop(priced.unitPrice * priced.quantity)}. En el siguiente paso se arma el mensaje de WhatsApp.
+              {product.name} · {formatCop(priced.unitPrice * priced.quantity)}. En el siguiente paso te pedimos un celular para enviar el pedido.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-between">
